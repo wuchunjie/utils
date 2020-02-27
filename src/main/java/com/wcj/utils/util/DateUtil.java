@@ -110,7 +110,7 @@ public class DateUtil {
     /**
      * 将指定的日期转换成Unix时间戳
      *
-     * @param String date 需要转换的日期 yyyy-MM-dd HH:mm:ss
+     * @param date 需要转换的日期 yyyy-MM-dd HH:mm:ss
      * @return long 时间戳
      */
     public static long dateToUnixTimestamp(String date) {
@@ -126,7 +126,8 @@ public class DateUtil {
     /**
      * 将指定的日期转换成Unix时间戳
      *
-     * @param String date 需要转换的日期 yyyy-MM-dd
+     * @param date       需要转换的日期 yyyy-MM-dd
+     * @param dateFormat
      * @return long 时间戳
      */
     public static long dateToUnixTimestamp(String date, String dateFormat) {
@@ -145,15 +146,14 @@ public class DateUtil {
      * @return long 时间戳
      */
     public static long dateToUnixTimestamp() {
-        long timestamp = new Date().getTime();
-        return timestamp;
+        return System.currentTimeMillis();
     }
 
 
     /**
      * 将Unix时间戳转换成日期
      *
-     * @param long timestamp 时间戳
+     * @param timestamp 时间戳
      * @return String 日期字符串
      */
     public static String unixTimestampToDate(long timestamp) {
