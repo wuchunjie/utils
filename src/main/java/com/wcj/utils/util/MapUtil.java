@@ -26,7 +26,7 @@ import java.util.Map.Entry;
  * @author: create by wcj
  * @date: 2019/12/23 0023
  * @time: 下午 15:28
- * @Description:
+ * @Description: map的一些工具
  */
 public class MapUtil {
     /**

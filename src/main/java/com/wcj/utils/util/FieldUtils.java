@@ -1,10 +1,5 @@
 package com.wcj.utils.util;
 
-import com.alibaba.fastjson.JSON;
-import com.wcj.utils.pojo.entity.Baby;
-import com.wcj.utils.pojo.entity.Man;
-import com.wcj.utils.pojo.entity.Person;
-import com.wcj.utils.pojo.entity.User;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -19,7 +14,7 @@ import java.util.List;
  * @author: create by wcj
  * @date: 2019/12/23 0023
  * @time: 下午 15:28
- * @Description:
+ * @Description: 反射的一些工具
  */
 public class FieldUtils {
 

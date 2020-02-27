@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @author: create by wcj
  * @date: 2019/12/3 0003
  * @time: 下午 16:34
- * @Description:
+ * @Description: list的一些工具
  */
 public class ListUtils {
 
