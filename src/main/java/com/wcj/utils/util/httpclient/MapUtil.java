@@ -1,0 +1,169 @@
+package com.wcj.utils.util.httpclient;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+
+/**
+ * @author wcj
+ */
+public class MapUtil {
+    /**
+     * Description: 替换map里的null为""
+     *
+     * @date 2017-5-11上午7:12:04
+     * @author baixs
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Map<String, Object> mapRemoveWithNullByRecursion(Map<String, Object> map) {
+        Set<Entry<String, Object>> set = map.entrySet();
+        Iterator<Entry<String, Object>> it = set.iterator();
+        Map map2;
+        while (it.hasNext()) {
+            Entry<String, Object> en = it.next();
+            if (!(en.getValue() instanceof Map)) {
+                if (null == en.getValue() || "null".equals(en.getValue())) {
+                    en.setValue("");
+                }
+            } else {
+                map2 = (Map) en.getValue();
+                mapRemoveWithNullByRecursion(map2);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 微信支付MD5加密,签名
+     *
+     * @param map
+     * @param key
+     * @return
+     */
+    public static String generateSign(Map<String, String> map, String key) {
+        Map<String, String> tempMap = order(map);
+        tempMap.remove("sign");
+        String str = mapJoin(tempMap, false, false);
+        return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
+    }
+
+    /**
+     * Map key 正序排序
+     *
+     * @param map
+     * @return
+     */
+    public static Map<String, String> order(Map<String, String> map) {
+        HashMap<String, String> tempMap = new LinkedHashMap<String, String>();
+        List<Map.Entry<String, String>> infoIds = new ArrayList<>(map.entrySet());
+        infoIds.sort(Map.Entry.comparingByKey());
+        infoIds.forEach(item -> tempMap.put(item.getKey(), item.getValue()));
+        return tempMap;
+    }
+
+    /**
+     * url 参数串连
+     *
+     * @param map             参数
+     * @param keyLower        是否小写
+     * @param valueUrlEncoder 是否url encoder
+     * @return key=value&key=value&key=value
+     */
+    public static String mapJoin(Map<String, String> map, boolean keyLower, boolean valueUrlEncoder) {
+        StringBuilder builder = new StringBuilder();
+        map.forEach((key, value) -> {
+            if (StringUtils.isNotBlank(key)) {
+                try {
+                    String temp = (key.endsWith("_") && key.length() > 1) ? key.substring(0, key.length() - 1) : key;
+                    builder.append(keyLower ? temp.toLowerCase() : temp)
+                            .append("=")
+                            .append(valueUrlEncoder ? URLEncoder.encode(value, "utf-8").replace("+", "%20") : value)
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        return builder.toString();
+    }
+
+
+    /**
+     * 表单提交数据格式（即key=value...）转成Map
+     *
+     * @param formParam
+     * @return
+     */
+    public static Map<String, String> formParamToMap(String formParam) {
+        Map<String, String> map = new HashMap<String, String>();
+        String[] keysAndValues = formParam.split("&");
+        for (String keyAndValue : keysAndValues) {
+            map.put(keyAndValue.split("=")[0], keyAndValue.split("=")[1]);
+        }
+        return map;
+    }
+    /**
+     * 简单 map 转换为 实体类
+     *
+     * @param t
+     * @return
+     */
+    public static <T> Map<String, Object> objectToMap(T t) {
+
+        return null;
+    }
+
+    /**
+     * 简单 map 转换为 实体类
+     *
+     * @param map
+     * @return
+     */
+    public static <T> T mapToObject(Map<String, Object> map, Class<T> clazz) {
+        map.forEach((key, value) -> {
+
+        });
+        return null;
+    }
+
+    /**
+     * 简单 xml 转换为 Map
+     *
+     * @param xml
+     * @return
+     */
+    public static Map<String, String> xmlToMap(String xml) {
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+            Element element = document.getDocumentElement();
+            NodeList nodeList = element.getChildNodes();
+            Map<String, String> map = new LinkedHashMap<String, String>();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element e = (Element) nodeList.item(i);
+                map.put(e.getNodeName(), e.getTextContent());
+            }
+            return map;
+        } catch (DOMException | ParserConfigurationException | IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
