@@ -2,6 +2,7 @@ package com.wcj.utils.util;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.OSSClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,9 +10,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-
+/**
+ * Created by IntelliJ IDEA.
+ *
+ * @author: create by wcj
+ * @date: 2019/12/3 0003
+ * @time: 下午 16:34
+ * @Description: oss对象服务上传的工具
+ */
 @Component
-public class File2OSSUtils {
+public class File2OssUtils {
 
     @Value("${oss.endpoint}")
     private String endpoint;
@@ -39,7 +47,7 @@ public class File2OSSUtils {
         String originalFilename = file.getOriginalFilename();
         String substring = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = images + UUID.randomUUID() + "_" + System.currentTimeMillis() + substring;
-        OSS ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         try {
             ossClient.putObject(bucketName, fileName, file.getInputStream());
         } catch (IOException e) {
@@ -55,11 +63,10 @@ public class File2OSSUtils {
      *
      * @param inputStream
      */
-    public String fileUploadOSS(InputStream inputStream) {
-        String originalFilename = "1.jpg";
+    public String fileUploadOSS(InputStream inputStream, String originalFilename) {
         String substring = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = images + UUID.randomUUID() + "_" + System.currentTimeMillis() + substring;
-        OSS ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         ossClient.putObject(bucketName, fileName, inputStream);
         // 关闭OSSClient。
         ossClient.shutdown();
