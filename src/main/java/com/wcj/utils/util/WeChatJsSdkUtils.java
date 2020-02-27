@@ -236,6 +236,4 @@ public class WeChatJsSdkUtils {
         weChatJsSha1.setSignature(sign);
         return weChatJsSha1;
     }
-
-
 }
