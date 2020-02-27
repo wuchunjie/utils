@@ -12,14 +12,24 @@ import lombok.Data;
  */
 @Data
 public class WeChatJsSha1 {
-
+    /**
+     * 时间戳(秒)
+     */
     private String timestamp;
-
+    /**
+     * 随机字符串
+     */
     private String noncestr;
-
+    /**
+     * 授权url
+     */
     private String url;
-
+    /**
+     * jsapi_ticket
+     */
     private String jsapi_ticket;
-
+    /**
+     * 签名
+     */
     private String signature;
 }

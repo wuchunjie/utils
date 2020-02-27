@@ -1,10 +1,7 @@
 package com.wcj.utils.util;
 
 import com.alibaba.fastjson.JSON;
-import com.wcj.utils.pojo.entity.WeChatJsSdk;
-import com.wcj.utils.pojo.entity.WeChatJsSdkResult;
-import com.wcj.utils.pojo.entity.WeChatUnion;
-import com.wcj.utils.pojo.entity.WeChatUserInfo;
+import com.wcj.utils.pojo.entity.*;
 import com.wcj.utils.util.httpclient.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -214,6 +211,31 @@ public class WeChatJsSdkUtils {
         return weChatUnion;
     }
 
+    /**
+     * JS-SDK使用权限签名算法
+     * @param url
+     * @return
+     */
+    public WeChatJsSha1 getSignature(String url){
+        WeChatJsSdkResult weChatJsSdkResult = getAccEssToken();
+        if (weChatJsSdkResult == null){
+            return null;
+        }
+        WeChatJsSdkResult jsApiTicket = getJsApiTicket(weChatJsSdkResult.getAccess_token());
+        if (jsApiTicket == null){
+            return null;
+        }
+        long millis = System.currentTimeMillis();
+        WeChatJsSha1 weChatJsSha1 = new WeChatJsSha1();
+        weChatJsSha1.setTimestamp(String.valueOf(millis / 1000));
+        weChatJsSha1.setNoncestr(String.valueOf(millis));
+        weChatJsSha1.setUrl(url);
+        weChatJsSha1.setJsapi_ticket(jsApiTicket.getTicket());
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdkResult);
+        String sign = MapUtil.generateSignBySha1(map);
+        weChatJsSha1.setSignature(sign);
+        return weChatJsSha1;
+    }
 
 
 }

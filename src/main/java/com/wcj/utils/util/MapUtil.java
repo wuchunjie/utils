@@ -58,7 +58,7 @@ public class MapUtil {
      * @param key
      * @return
      */
-    public static String generateSignByMd5(Map<String, String> map, String key) {
+    public static String generateSignByMd5(Map<String, Object> map, String key) {
         Map<String, Object> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
@@ -69,10 +69,9 @@ public class MapUtil {
      * 微信权限签名,sha1加密
      *
      * @param map
-     * @param key
      * @return
      */
-    public static String generateSignBySha1(Map<String, String> map, String key) {
+    public static String generateSignBySha1(Map<String, Object> map) {
         Map<String, Object> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
@@ -85,9 +84,9 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static Map<String, Object> order(Map<String, String> map) {
+    public static Map<String, Object> order(Map<String, Object> map) {
         HashMap<String, Object> tempMap = new LinkedHashMap<>();
-        List<Map.Entry<String, String>> infoIds = new ArrayList<>(map.entrySet());
+        List<Map.Entry<String, Object>> infoIds = new ArrayList<>(map.entrySet());
         infoIds.sort(Map.Entry.comparingByKey());
         infoIds.forEach(item -> tempMap.put(item.getKey(), item.getValue()));
         return tempMap;
