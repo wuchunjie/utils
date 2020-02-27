@@ -63,24 +63,4 @@ public class ListUtils {
     public static <T, V> List<T> listTrans(List<V> list, Class<T> clazz) {
         return list.stream().map(object -> FieldUtils.fieldTrans(object, clazz)).collect(Collectors.toList());
     }
-
-
-    public static void main(String[] args) {
-        List<User> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            User user = new User();
-            user.setName("张三" + i);
-            user.setSex("12");
-            user.setAge(i);
-            list.add(user);
-        }
-        for (int i = 0; i < 10; i++) {
-            User user = new User();
-            user.setName("张三" + i);
-            user.setSex("12");
-            user.setAge(i);
-            list.add(user);
-        }
-        System.out.println(JSON.toJSONString(listGroup(list,"age")));
-    }
 }

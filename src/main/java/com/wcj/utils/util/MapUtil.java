@@ -60,7 +60,7 @@ public class MapUtil {
      * @return
      */
     public static String generateSign(Map<String, String> map, String key) {
-        Map<String, String> tempMap = order(map);
+        Map<String, Object> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
@@ -72,8 +72,8 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static Map<String, String> order(Map<String, String> map) {
-        HashMap<String, String> tempMap = new LinkedHashMap<String, String>();
+    public static Map<String, Object> order(Map<String, String> map) {
+        HashMap<String, Object> tempMap = new LinkedHashMap<>();
         List<Map.Entry<String, String>> infoIds = new ArrayList<>(map.entrySet());
         infoIds.sort(Map.Entry.comparingByKey());
         infoIds.forEach(item -> tempMap.put(item.getKey(), item.getValue()));
@@ -88,7 +88,7 @@ public class MapUtil {
      * @param valueUrlEncoder 是否url encoder
      * @return key=value&key=value&key=value
      */
-    public static String mapJoin(Map<String, String> map, boolean keyLower, boolean valueUrlEncoder) {
+    public static String mapJoin(Map<String, Object> map, boolean keyLower, boolean valueUrlEncoder) {
         StringBuilder builder = new StringBuilder();
         map.forEach((key, value) -> {
             if (StringUtils.isNotBlank(key)) {
@@ -96,7 +96,7 @@ public class MapUtil {
                     String temp = (key.endsWith("_") && key.length() > 1) ? key.substring(0, key.length() - 1) : key;
                     builder.append(keyLower ? temp.toLowerCase() : temp)
                             .append("=")
-                            .append(valueUrlEncoder ? URLEncoder.encode(value, "utf-8").replace("+", "%20") : value)
+                            .append(valueUrlEncoder ? URLEncoder.encode(value.toString(), "utf-8").replace("+", "%20") : value)
                             .append("&");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
