@@ -1,6 +1,5 @@
 package com.wcj.utils.util;
 
-import com.wcj.utils.pojo.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.DOMException;
