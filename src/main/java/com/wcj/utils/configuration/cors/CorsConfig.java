@@ -12,7 +12,7 @@ import org.springframework.web.filter.CorsFilter;
  * @author: create by wcj
  * @date: 2019/12/2 0002
  * @time: 下午 14:25
- * @Description:
+ * @Description: 全局允许跨域配置
  */
 @Configuration
 public class CorsConfig {

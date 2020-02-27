@@ -11,14 +11,14 @@ import redis.clients.jedis.Jedis;
  * @author: create by wcj
  * @date: 2019/6/27 0027
  * @time: 下午 14:59
- * @Description:
+ * @Description: jides 配置
  */
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisAutoConfiguration {
 
     @Bean
-    public Jedis createJedis(RedisProperties properties) {
+    public Jedis getJedis(RedisProperties properties) {
         return new Jedis(properties.getHost(), properties.getPort());
     }
 

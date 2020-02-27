@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author: create by wcj
  * @date: 2019/7/15 0015
  * @time: 下午 14:42
- * @Description:
+ * @Description: 拦截器配置
  */
 @Configuration
 public class MyWebMvcConfigurer implements WebMvcConfigurer {

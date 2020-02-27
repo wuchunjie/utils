@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
  * @author: create by wcj
  * @date: 2020/2/24 0024
  * @time: 下午 17:18
- * @Description:
+ * @Description: 多线程线程池配置
  */
 @Configuration
 public class ThreadConfig implements AsyncConfigurer {
@@ -21,8 +21,11 @@ public class ThreadConfig implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        //线程池维护线程的最少数量
         executor.setCorePoolSize(10);
+        //线程池维护线程的最大数量
         executor.setMaxPoolSize(15);
+        //线程池所使用的缓冲队列
         executor.setQueueCapacity(25);
         executor.initialize();
         return executor;
