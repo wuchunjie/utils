@@ -1,6 +1,7 @@
 package com.wcj.utils.util;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,47 +17,191 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.Map.Entry;
 
+/**
+ * Created by IntelliJ IDEA.
+ *
+ * @author: create by wcj
+ * @date: 2019/12/23 0023
+ * @time: 下午 15:28
+ * @Description:
+ */
 public class MapUtil {
-
     /**
-     * 转换对象为map
-     *
-     * @param object
-     * @param ignore
+     * Description: 替换map里的null为""
+     * @param map
      * @return
      */
-    public static Map<String, String> objectToMap(Object object, String... ignore) {
-        Map<String, String> tempMap = new LinkedHashMap<String, String>();
-        for (Field f : Objects.requireNonNull(FieldUtils.getAllFields(object.getClass()))) {
-            if (!f.isAccessible()) {
-                f.setAccessible(true);
-            }
-            boolean ig = false;
-            if (ignore != null && ignore.length > 0) {
-                for (String i : ignore) {
-                    if (i.equals(f.getName())) {
-                        ig = true;
-                        break;
-                    }
+    public static Map<String, Object> mapRemoveWithNullByRecursion(Map<String, Object> map) {
+        Set<Entry<String, Object>> set = map.entrySet();
+        Iterator<Entry<String, Object>> it = set.iterator();
+        Map map2;
+        while (it.hasNext()) {
+            Entry<String, Object> en = it.next();
+            if (!(en.getValue() instanceof Map)) {
+                if (null == en.getValue() || "null".equals(en.getValue())) {
+                    en.setValue("");
                 }
-            }
-            if (ig) {
-                continue;
             } else {
-                Object o = null;
-                try {
-                    o = f.get(object);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                if (!"serialVersionUID".equals(f.getName()) && !"FAIL".equals(f.getName()) && !"OKMSG".equals(f.getName()) && !"SUCCESS".equals(f.getName()) && !"hmac".equals(f.getName())) {
-                    tempMap.put(f.getName(), o == null ? "" : o.toString());
-                }
+                map2 = (Map) en.getValue();
+                mapRemoveWithNullByRecursion(map2);
             }
         }
+        return map;
+    }
+
+    /**
+     * 微信支付MD5加密,签名
+     *
+     * @param map
+     * @param key
+     * @return
+     */
+    public static String generateSign(Map<String, String> map, String key) {
+        Map<String, String> tempMap = order(map);
+        tempMap.remove("sign");
+        String str = mapJoin(tempMap, false, false);
+        return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
+    }
+
+    /**
+     * Map key 正序排序
+     *
+     * @param map
+     * @return
+     */
+    public static Map<String, String> order(Map<String, String> map) {
+        HashMap<String, String> tempMap = new LinkedHashMap<String, String>();
+        List<Map.Entry<String, String>> infoIds = new ArrayList<>(map.entrySet());
+        infoIds.sort(Map.Entry.comparingByKey());
+        infoIds.forEach(item -> tempMap.put(item.getKey(), item.getValue()));
         return tempMap;
+    }
+
+    /**
+     * url 参数串连
+     *
+     * @param map             参数
+     * @param keyLower        是否小写
+     * @param valueUrlEncoder 是否url encoder
+     * @return key=value&key=value&key=value
+     */
+    public static String mapJoin(Map<String, String> map, boolean keyLower, boolean valueUrlEncoder) {
+        StringBuilder builder = new StringBuilder();
+        map.forEach((key, value) -> {
+            if (StringUtils.isNotBlank(key)) {
+                try {
+                    String temp = (key.endsWith("_") && key.length() > 1) ? key.substring(0, key.length() - 1) : key;
+                    builder.append(keyLower ? temp.toLowerCase() : temp)
+                            .append("=")
+                            .append(valueUrlEncoder ? URLEncoder.encode(value, "utf-8").replace("+", "%20") : value)
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        return builder.toString();
+    }
+
+
+    /**
+     * 表单提交数据格式（即key=value...）转成Map
+     *
+     * @param formParam
+     * @return
+     */
+    public static Map<String, String> formParamToMap(String formParam) {
+        Map<String, String> map = new HashMap<>();
+        String[] keysAndValues = formParam.split("&");
+        for (String keyAndValue : keysAndValues) {
+            map.put(keyAndValue.split("=")[0], keyAndValue.split("=")[1]);
+        }
+        return map;
+    }
+
+    /**
+     * 简单 map 转换为 实体类
+     *
+     * @param t
+     * @return
+     */
+    public static <T> Map<String, Object> objectToMap(T t) {
+        Map<String, Object> map = new HashMap<>();
+        List<Field> fields = FieldUtils.getAllFields(t.getClass());
+        if (fields == null) {
+            return map;
+        }
+        fields.forEach(field -> {
+            field.setAccessible(true);
+            try {
+                map.put(field.getName(), field.get(t));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        return map;
+    }
+
+    /**
+     * 简单 xml 转换为 实体类
+     *
+     * @param xml
+     * @param clazz
+     * @return
+     */
+    public static <T> T xmlToObject(String xml, Class<T> clazz) {
+        Map<String, Object> map = xmlToMap(xml);
+        return mapToObject(map, clazz);
+    }
+
+    /**
+     * 简单 map 转换为 实体类
+     *
+     * @param map
+     * @return
+     */
+    public static <T> T mapToObject(Map<String, Object> map, Class<T> clazz) {
+        if (map == null) {
+            return null;
+        }
+        try {
+            T t = clazz.newInstance();
+            map.forEach((key, value) -> {
+                FieldUtils.setFieldValue(key, value, t);
+            });
+            return t;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 简单 xml 转换为 Map
+     *
+     * @param xml
+     * @return
+     */
+    public static Map<String, Object> xmlToMap(String xml) {
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+            Element element = document.getDocumentElement();
+            NodeList nodeList = element.getChildNodes();
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element e = (Element) nodeList.item(i);
+                map.put(e.getNodeName(), e.getTextContent());
+            }
+            return map;
+        } catch (DOMException | ParserConfigurationException | IOException | SAXException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -184,15 +183,40 @@ public class FieldUtils {
                 return;
             }
             //字段如果是final修饰的则跳过
-            if (Modifier.isFinal(declaredField.getModifiers())){
+            if (Modifier.isFinal(declaredField.getModifiers())) {
                 return;
             }
             //字段类型不同,则不赋值
-            if (!field.getGenericType().equals(declaredField.getGenericType())){
+            if (!field.getGenericType().getTypeName().equals(declaredField.getGenericType().getTypeName())) {
                 return;
             }
             declaredField.setAccessible(true);
             declaredField.set(v, field.get(t));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据字段名给另一个对象赋值
+     *
+     * @param name  字段名
+     * @param value 值
+     * @param t     被赋值的对象
+     * @param <T>
+     */
+    public static <T> void setFieldValue(String name, Object value, T t) {
+        try {
+            Field field = getFieldByName(t.getClass(), name);
+            if (field == null) {
+                return;
+            }
+            //字段如果是final修饰的则跳过
+            if (Modifier.isFinal(field.getModifiers())) {
+                return;
+            }
+            field.setAccessible(true);
+            field.set(t, value);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
