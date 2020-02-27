@@ -98,7 +98,6 @@ public class SmsUtil{
         //必填-当前页码从1开始计数
         request.setCurrentPage(1L);
         //hint 此处可能会抛出异常，注意catch
-        QuerySendDetailsResponse querySendDetailsResponse = acsClient.getAcsResponse(request);
-        return querySendDetailsResponse;
+        return acsClient.getAcsResponse(request);
     }
 }
