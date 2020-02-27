@@ -1,9 +1,12 @@
 package com.wcj.utils.util;
 
 import com.alibaba.fastjson.JSON;
+import com.wcj.utils.pojo.entity.WeChatJsSdk;
+import com.wcj.utils.pojo.entity.WeChatJsSdkResult;
+import com.wcj.utils.pojo.entity.WeChatUnion;
+import com.wcj.utils.pojo.entity.WeChatUserInfo;
 import com.wcj.utils.util.httpclient.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,170 +25,195 @@ import java.util.Map;
 public class WeChatJsSdkUtils {
 
     @Value("${wechat.appid}")
-    private String wechatAppid;
+    private String appid;
 
     @Value("${wechat.appsecret}")
     private String appsecret;
 
-    public Map getUnionID(String code) {
-        Map map = getAccessToken(code);
-        String openid = "";
-        if (map != null && map.containsKey("openid")) {
-            openid = map.get("openid").toString();
-        }
-        if (StringUtils.isNotBlank(openid)) {
-            String token = getJsapiTicketAccEssToken();
-            boolean subscribe = getUnionID(token, openid);
-            map.put("subscribe", subscribe);
-            map.put("openid", openid);
-            return map;
-        }
-        return null;
-    }
+    @Value("${wehcat.sdk.access_token}")
+    private String accessTokenUrl;
+
+    @Value("${wehcat.sdk.userinfo}")
+    private String userInfoUrl;
+
+    @Value("${wehcat.sdk.refresh_token}")
+    private String refreshTokenUrl;
+
+    @Value("${wehcat.sdk.check.access_token}")
+    private String checkAccessTokenUrl;
+
+    @Value("${wehcat.sdk.get.access_token}")
+    private String getAccessTokenUrl;
+
+    @Value("${wehcat.sdk.union}")
+    private String unionUrl;
 
     /**
-     * 通过code获取openid
-     *
-     * @param code
-     * @return
-     */
-    public String getOpenId(String code) {
-        Map token = getAccessToken(code);
-        return token.get("openid").toString();
-    }
-
-    /**
-     * 通过code获取用户信息
-     *
-     * @param code
-     * @return
-     */
-    public Map getUserInfo(String code) {
-        Map token = getAccessToken(code);
-        if (token == null) {
-            return null;
-        }
-        String accessToken = token.get("access_token").toString();
-        String openid = token.get("openid").toString();
-        Map userInfo = getUserInfo(openid, accessToken);
-        if (userInfo != null) {
-            userInfo.put("refresh_token", token.get("refresh_token"));
-        }
-        return userInfo;
-    }
-
-    /**
-     * 根据用户openid和refresh_token获取用户信息
-     *
-     * @param openId
-     * @param refreshToken
-     * @return
-     */
-    public Map getUserInfoByOpenIdAndRefreshToken(String openId, String refreshToken) {
-        //根绝refresh_token刷新access_token
-        String accessToken = refreshToken(refreshToken);
-        if (accessToken == null) {
-            return null;
-        }
-        return getUserInfo(openId, accessToken);
-    }
-
-    /**
-     * 通过code获取微信access_token
+     * 通过code换取网页授权access_token
      *
      * @param code code
      * @return
      */
-    public Map getAccessToken(String code) {
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + wechatAppid + "&secret=" + appsecret + "&code=" + code + "&grant_type=authorization_code";
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("openid")) {
-            return map;
+    public WeChatJsSdkResult getAccessToken(String code) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAppid(appid);
+        weChatJsSdk.setSecret(appsecret);
+        weChatJsSdk.setCode(code);
+        weChatJsSdk.setGrant_type("authorization_code");
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(accessTokenUrl, map);
+        WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
+        if (weChatJsSdkResult == null){
+            log.error(json);
+            return null;
         }
-        return null;
-
+        if (weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() != 0) {
+            log.error(json);
+            return null;
+        }
+        return weChatJsSdkResult;
     }
 
     /**
-     * 根据access_token和openid获取用户信息
+     * 刷新access_token（如果需要）
+     *
+     * @param refreshToken refresh_token
+     * @return access_token
+     */
+    private WeChatJsSdkResult refreshToken(String refreshToken) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAppid(appid);
+        weChatJsSdk.setSecret(appsecret);
+        weChatJsSdk.setGrant_type("refresh_token");
+        weChatJsSdk.setRefresh_token(refreshToken);
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(refreshTokenUrl, map);
+        WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
+        if (weChatJsSdkResult == null){
+            log.error(json);
+            return null;
+        }
+        if (weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() != 0) {
+            log.error(json);
+            return null;
+        }
+        return weChatJsSdkResult;
+    }
+
+    /**
+     * 拉取用户信息(需scope为 snsapi_userinfo)
      *
      * @param openid      openid
      * @param accessToken access_token
      * @return 用户信息
      */
-    public Map getUserInfo(String openid, String accessToken) {
-        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=" + accessToken + "&openid=" + openid + "&lang=zh_CN";
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("openid")) {
-            return map;
+    public WeChatUserInfo getUserInfo(String openid, String accessToken) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        weChatJsSdk.setOpenid(openid);
+        weChatJsSdk.setLang("zh_CN");
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(userInfoUrl, map);
+        WeChatUserInfo weChatUserInfo = JSON.parseObject(json, WeChatUserInfo.class);
+        if (weChatUserInfo == null){
+            log.error(json);
+            return null;
         }
-        return null;
-
+        if (weChatUserInfo.getErrcode() != null && weChatUserInfo.getErrcode() != 0) {
+            log.error(json);
+            return null;
+        }
+        return weChatUserInfo;
     }
 
     /**
-     * 通过refreshToken刷新access_token
+     * 检验授权凭证（access_token）是否有效
      *
-     * @param refreshToken refresh_token
-     * @return access_token
+     * @param openid      openid
+     * @param accessToken access_token
+     * @return 用户信息
      */
-    private String refreshToken(String refreshToken) {
-        String url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + wechatAppid + "&grant_type=refresh_token&refresh_token=" + refreshToken;
-        log.info("url=======" + url);
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("access_token")) {
-            return map.get("access_token").toString();
+    public boolean checkAccessToken(String openid, String accessToken) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        weChatJsSdk.setOpenid(openid);
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(checkAccessTokenUrl, map);
+        WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
+        return weChatJsSdkResult != null && weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() == 0;
+    }
+
+    /**
+     * 获取微信公众号access_token
+     * @return
+     */
+    public WeChatJsSdkResult getAccEssToken() {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAppid(appid);
+        weChatJsSdk.setSecret(appsecret);
+        weChatJsSdk.setGrant_type("client_credential");
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
+        WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
+        if (weChatJsSdkResult == null){
+            log.error(json);
+            return null;
         }
-        return null;
-
-    }
-
-    public String getJsapiTicket() {
-        String accessToken = getJsapiTicketAccEssToken();
-        return getJsapiTicket(accessToken);
-    }
-
-
-    private String getJsapiTicketAccEssToken() {
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + wechatAppid + "&secret=" + appsecret;
-        log.info("url=======" + url);
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("access_token")) {
-            return map.get("access_token").toString();
+        if (weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() != 0) {
+            log.error(json);
+            return null;
         }
-        return null;
+        return weChatJsSdkResult;
     }
 
-    private String getJsapiTicket(String accessToken) {
-        String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=jsapi";
-        log.info("url=======" + url);
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("ticket")) {
-            return map.get("ticket").toString();
+    /**
+     * 获取jsapi_ticket
+     * @param accessToken
+     * @return
+     */
+    public WeChatJsSdkResult getJsApiTicket(String accessToken) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        weChatJsSdk.setType("jsapi");
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
+        WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
+        if (weChatJsSdkResult == null){
+            log.error(json);
+            return null;
         }
-        return null;
+        if (weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() != 0) {
+            log.error(json);
+            return null;
+        }
+        return weChatJsSdkResult;
     }
 
-    private boolean getUnionID(String token, String openId) {
-        String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + token + "&openid=" + openId + "&lang=zh_CN";
-        log.info("url=======" + url);
-        String json = HttpClientUtil.doGet(url);
-        log.info(json);
-        Map map = JSON.parseObject(json, Map.class);
-        if (map.containsKey("subscribe")) {
-            Integer subscribe = (Integer) map.get("subscribe");
-            return subscribe == 1;
+    /**
+     * 获取用户基本信息
+     * @param accessToken
+     * @param openId
+     * @return
+     */
+    public WeChatUnion getUnion(String accessToken, String openId) {
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        weChatJsSdk.setOpenid(openId);
+        weChatJsSdk.setLang("zh_CN");
+        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        String json = HttpClientUtil.doGet(unionUrl, map);
+        WeChatUnion weChatUnion = JSON.parseObject(json, WeChatUnion.class);
+        if (weChatUnion == null){
+            log.error(json);
+            return null;
         }
-        return false;
+        if (weChatUnion.getErrcode() != null && weChatUnion.getErrcode() != 0) {
+            log.error(json);
+            return null;
+        }
+        return weChatUnion;
     }
+
+
+
 }

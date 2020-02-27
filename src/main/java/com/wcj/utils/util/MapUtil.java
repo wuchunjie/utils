@@ -53,17 +53,31 @@ public class MapUtil {
     }
 
     /**
-     * 微信支付MD5加密,签名
+     * 微信支付签名,MD5加密
      *
      * @param map
      * @param key
      * @return
      */
-    public static String generateSign(Map<String, String> map, String key) {
+    public static String generateSignByMd5(Map<String, String> map, String key) {
         Map<String, Object> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
+    }
+
+    /**
+     * 微信权限签名,sha1加密
+     *
+     * @param map
+     * @param key
+     * @return
+     */
+    public static String generateSignBySha1(Map<String, String> map, String key) {
+        Map<String, Object> tempMap = order(map);
+        tempMap.remove("sign");
+        String str = mapJoin(tempMap, false, false);
+        return DigestUtils.sha1Hex(str);
     }
 
     /**
