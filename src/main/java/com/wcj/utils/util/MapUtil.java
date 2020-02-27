@@ -1,5 +1,6 @@
 package com.wcj.utils.util;
 
+import com.wcj.utils.pojo.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.DOMException;
@@ -110,13 +111,13 @@ public class MapUtil {
 
 
     /**
-     * 表单提交数据格式（即key=value...）转成Map
+     * 表单提交数据格式（即key=value&key=value...）转成Map
      *
      * @param formParam
      * @return
      */
-    public static Map<String, String> formParamToMap(String formParam) {
-        Map<String, String> map = new HashMap<>();
+    public static Map<String, Object> formParamToMap(String formParam) {
+        Map<String, Object> map = new HashMap<>();
         String[] keysAndValues = formParam.split("&");
         for (String keyAndValue : keysAndValues) {
             map.put(keyAndValue.split("=")[0], keyAndValue.split("=")[1]);
@@ -127,19 +128,19 @@ public class MapUtil {
     /**
      * 简单 map 转换为 实体类
      *
-     * @param t
+     * @param obj
      * @return
      */
-    public static <T> Map<String, Object> objectToMap(T t) {
+    public static Map<String, Object> objectToMap(Object obj) {
         Map<String, Object> map = new HashMap<>();
-        List<Field> fields = FieldUtils.getAllFields(t.getClass());
+        List<Field> fields = FieldUtils.getAllFields(obj.getClass());
         if (fields == null) {
             return map;
         }
         fields.forEach(field -> {
             field.setAccessible(true);
             try {
-                map.put(field.getName(), field.get(t));
+                map.put(field.getName(), field.get(obj));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

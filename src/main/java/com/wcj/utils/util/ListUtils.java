@@ -1,5 +1,8 @@
 package com.wcj.utils.util;
 
+import com.alibaba.fastjson.JSON;
+import com.wcj.utils.pojo.entity.User;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,29 +23,21 @@ public class ListUtils {
     /**
      * 按照某个属性把集合进行分组
      *
-     * @param list       需要分组的集合
-     * @param groupField 属性名
+     * @param list 需要分组的集合
+     * @param name 属性名
      * @return
      */
-    public static <T> Map<String, List<T>> listGroup(List<T> list, String groupField) {
+    public static <T> Map<String, List<T>> listGroup(List<T> list, String name) {
         Map<String, List<T>> resultMap = new HashMap<>();
         for (T t : list) {
-            List<String> childName = FieldUtils.getFieldNames(t.getClass());
-            List<String> superName = FieldUtils.getFieldNames(t.getClass().getSuperclass());
             try {
-                String value = null;
-                if (childName.contains(groupField)) {
-                    Field field = t.getClass().getDeclaredField(groupField);
-                    field.setAccessible(true);
-                    value = field.get(t).toString();
-                }else if (superName.contains(groupField)){
-                    Field field = t.getClass().getSuperclass().getDeclaredField(groupField);
-                    field.setAccessible(true);
-                    value = field.get(t).toString();
-                }else{
-                    resultMap.put(groupField,list);
+                Field fieldByName = FieldUtils.getFieldByName(t.getClass(), name);
+                if (fieldByName == null) {
+                    resultMap.put(name, list);
                     return resultMap;
                 }
+                fieldByName.setAccessible(true);
+                String value = fieldByName.get(t).toString();
                 if (resultMap.containsKey(value)) {
                     resultMap.get(value).add(t);
                 } else {
@@ -50,7 +45,7 @@ public class ListUtils {
                     dataItem.add(t);
                     resultMap.put(value, dataItem);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -67,5 +62,25 @@ public class ListUtils {
      */
     public static <T, V> List<T> listTrans(List<V> list, Class<T> clazz) {
         return list.stream().map(object -> FieldUtils.fieldTrans(object, clazz)).collect(Collectors.toList());
+    }
+
+
+    public static void main(String[] args) {
+        List<User> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            User user = new User();
+            user.setName("张三" + i);
+            user.setSex("12");
+            user.setAge(i);
+            list.add(user);
+        }
+        for (int i = 0; i < 10; i++) {
+            User user = new User();
+            user.setName("张三" + i);
+            user.setSex("12");
+            user.setAge(i);
+            list.add(user);
+        }
+        System.out.println(JSON.toJSONString(listGroup(list,"age")));
     }
 }

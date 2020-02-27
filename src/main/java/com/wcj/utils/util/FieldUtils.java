@@ -1,5 +1,10 @@
 package com.wcj.utils.util;
 
+import com.alibaba.fastjson.JSON;
+import com.wcj.utils.pojo.entity.Baby;
+import com.wcj.utils.pojo.entity.Man;
+import com.wcj.utils.pojo.entity.Person;
+import com.wcj.utils.pojo.entity.User;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -176,6 +181,7 @@ public class FieldUtils {
         if (field == null) {
             return;
         }
+        field.setAccessible(true);
         String name = field.getName();
         try {
             Field declaredField = getFieldByName(v.getClass(), name);
