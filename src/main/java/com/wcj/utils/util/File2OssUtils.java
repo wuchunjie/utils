@@ -1,7 +1,6 @@
 package com.wcj.utils.util;
 
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+
 /**
  * Created by IntelliJ IDEA.
  *
@@ -38,12 +38,13 @@ public class File2OssUtils {
 
     @Value("${oss.images}")
     private String images;
+
     /**
      * 上传图片到oss
      *
      * @param file
      */
-    public String fileUploadOSS(MultipartFile file) {
+    public String file2Oss(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String substring = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = images + UUID.randomUUID() + "_" + System.currentTimeMillis() + substring;
@@ -63,7 +64,7 @@ public class File2OssUtils {
      *
      * @param inputStream
      */
-    public String fileUploadOSS(InputStream inputStream, String originalFilename) {
+    public String file2Oss(InputStream inputStream, String originalFilename) {
         String substring = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = images + UUID.randomUUID() + "_" + System.currentTimeMillis() + substring;
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
