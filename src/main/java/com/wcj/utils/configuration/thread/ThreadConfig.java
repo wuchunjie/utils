@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
  * @author: create by wcj
  * @date: 2020/2/24 0024
  * @time: 下午 17:18
- * @Description: 多线程线程池配置
+ * @Description: async多线程线程池配置
  */
 @Configuration
 public class ThreadConfig implements AsyncConfigurer {

@@ -34,7 +34,7 @@ public class LogAspect {
     private static long startTime;
     private static long endTime;
 
-    //TODO 此处填写项目实际的controller的路径
+    //TODO 此处填写项目实际的controller的路径(切面位置)
     @Pointcut("execution(public * com.wcj.utils.controller.*.*(..))")
     public void webLog() {
 
@@ -43,14 +43,24 @@ public class LogAspect {
     @Before("webLog()")
     public void doBefore(JoinPoint joinPoint) {
         startTime = System.currentTimeMillis();
+        //获取上下文request容器
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null){
+            return;
+        }
+        //获取request
         HttpServletRequest request = attributes.getRequest();
         logger.info("========================================== Start ==========================================");
+        //请求地址
         logger.info("   URL:              {}", request.getRequestURL().toString());
+        //请求方法
         logger.info("   HttpMethod:       {}", request.getMethod());
+        //header中获取token
         logger.info("   token:            {}", request.getHeader("token"));
+        //获取请求的入参
         Object[] args = joinPoint.getArgs();
         try {
+            //如果入参有文件的话不转成json
             if (args == null || args.length == 0 || args[0] instanceof MultipartFile) {
                 logger.info("   Param:            {}", args);
             } else {
