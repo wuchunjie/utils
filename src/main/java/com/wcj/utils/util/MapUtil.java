@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 public class MapUtil {
     /**
      * Description: 替换map里的null为""
+     *
      * @param map
      * @return
      */
@@ -84,13 +85,15 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static Map<String, Object> order(Map<String, Object> map) {
-        HashMap<String, Object> tempMap = new LinkedHashMap<>();
-        List<Map.Entry<String, Object>> infoIds = new ArrayList<>(map.entrySet());
-        infoIds.sort(Map.Entry.comparingByKey());
-        infoIds.forEach(item -> tempMap.put(item.getKey(), item.getValue()));
+    public static <T> Map<String, T> order(Map<String, T> map) {
+        HashMap<String, T> tempMap = new LinkedHashMap<>();
+        Set<String> keySet = map.keySet();
+        List<String> list = new ArrayList<>(keySet);
+        list.sort(String::compareTo);
+        list.forEach(key -> tempMap.put(key, map.get(key)));
         return tempMap;
     }
+
 
     /**
      * url 参数串连
