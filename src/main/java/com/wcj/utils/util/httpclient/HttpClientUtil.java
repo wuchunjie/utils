@@ -52,7 +52,7 @@ public class HttpClientUtil {
      * @param url
      * @return
      */
-    public static String doGet(String url, Map<String, Object> paramMap) {
+    public static String doGet(String url, Map<String, String> paramMap) {
         try {
             CloseableHttpClient client = HttpClientPool.getConnection();
             String builderUrl = buildUrlQuery(url, paramMap);
@@ -86,7 +86,7 @@ public class HttpClientUtil {
      * @param paramMap url参数
      * @return
      */
-    public static String doPost(String url, Map<String, Object> paramMap) {
+    public static String doPost(String url, Map<String, String> paramMap) {
         return doPost(url, null, paramMap);
     }
 
@@ -98,7 +98,7 @@ public class HttpClientUtil {
      * @param paramMap url参数
      * @return
      */
-    public static String doPost(String url, Map<String, String> headers, Map<String, Object> paramMap) {
+    public static String doPost(String url, Map<String, String> headers, Map<String, String> paramMap) {
         return doPost(url, headers, paramMap, null);
     }
 
@@ -111,7 +111,7 @@ public class HttpClientUtil {
      * @param body     json参数
      * @return
      */
-    public static String doPost(String url, Map<String, String> headers, Map<String, Object> paramMap, String body) {
+    public static String doPost(String url, Map<String, String> headers, Map<String, String> paramMap, String body) {
         try {
             CloseableHttpClient client = HttpClientPool.getConnection();
             String builderUrl = buildUrlQuery(url, paramMap);
@@ -144,7 +144,7 @@ public class HttpClientUtil {
      * @param body     表单参数
      * @return
      */
-    public static String doPostByForm(String url, Map<String, String> headers, Map<String, Object> paramMap, Map<String, String> body) {
+    public static String doPostByForm(String url, Map<String, String> headers, Map<String, String> paramMap, Map<String, String> body) {
         try {
             CloseableHttpClient client = HttpClientPool.getConnection();
             String builderUrl = buildUrlQuery(url, paramMap);
@@ -199,11 +199,11 @@ public class HttpClientUtil {
         return contentStr;
     }
 
-    private static String buildUrlQuery(String url, Map<String, Object> querys) {
+    private static String buildUrlQuery(String url, Map<String, String> querys) {
         return url + buildUrlQuery(querys);
     }
 
-    private static String buildUrlQuery(Map<String, Object> querys) {
+    private static String buildUrlQuery(Map<String, String> querys) {
         return "?" + MapUtil.mapJoin(querys, false, true);
     }
 }

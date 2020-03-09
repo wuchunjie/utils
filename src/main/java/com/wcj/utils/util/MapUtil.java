@@ -59,8 +59,8 @@ public class MapUtil {
      * @param key
      * @return
      */
-    public static String generateSignByMd5(Map<String, Object> map, String key) {
-        Map<String, Object> tempMap = order(map);
+    public static String generateSignByMd5(Map<String, String> map, String key) {
+        Map<String, String> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
@@ -72,8 +72,8 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static String generateSignBySha1(Map<String, Object> map) {
-        Map<String, Object> tempMap = order(map);
+    public static String generateSignBySha1(Map<String, String> map) {
+        Map<String, String> tempMap = order(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.sha1Hex(str);
@@ -103,7 +103,7 @@ public class MapUtil {
      * @param valueUrlEncoder 是否url encoder
      * @return key=value&key=value&key=value
      */
-    public static String mapJoin(Map<String, Object> map, boolean keyLower, boolean valueUrlEncoder) {
+    public static String mapJoin(Map<String, String> map, boolean keyLower, boolean valueUrlEncoder) {
         StringBuilder builder = new StringBuilder();
         map.forEach((key, value) -> {
             if (StringUtils.isNotBlank(key)) {
@@ -111,7 +111,7 @@ public class MapUtil {
                     String temp = (key.endsWith("_") && key.length() > 1) ? key.substring(0, key.length() - 1) : key;
                     builder.append(keyLower ? temp.toLowerCase() : temp)
                             .append("=")
-                            .append(valueUrlEncoder ? URLEncoder.encode(value.toString(), "utf-8").replace("+", "%20") : value)
+                            .append(valueUrlEncoder ? URLEncoder.encode(value, "utf-8").replace("+", "%20") : value)
                             .append("&");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -141,7 +141,7 @@ public class MapUtil {
     }
 
     /**
-     * 简单 map 转换为 实体类
+     * 简单 实体类 转换为 map
      *
      * @param obj
      * @return
