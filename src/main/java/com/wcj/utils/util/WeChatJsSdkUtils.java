@@ -57,7 +57,7 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setCode(code);
         weChatJsSdk.setGrant_type("authorization_code");
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(accessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null){
@@ -83,7 +83,7 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setGrant_type("refresh_token");
         weChatJsSdk.setRefresh_token(refreshToken);
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(refreshTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null){
@@ -109,7 +109,7 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openid);
         weChatJsSdk.setLang("zh_CN");
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(userInfoUrl, map);
         WeChatUserInfo weChatUserInfo = JSON.parseObject(json, WeChatUserInfo.class);
         if (weChatUserInfo == null){
@@ -134,7 +134,7 @@ public class WeChatJsSdkUtils {
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openid);
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(checkAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         return weChatJsSdkResult != null && weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() == 0;
@@ -149,7 +149,7 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAppid(appid);
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setGrant_type("client_credential");
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null){
@@ -172,7 +172,7 @@ public class WeChatJsSdkUtils {
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setType("jsapi");
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null){
@@ -197,7 +197,7 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openId);
         weChatJsSdk.setLang("zh_CN");
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(unionUrl, map);
         WeChatUnion weChatUnion = JSON.parseObject(json, WeChatUnion.class);
         if (weChatUnion == null){
@@ -231,7 +231,7 @@ public class WeChatJsSdkUtils {
         weChatJsSha1.setNoncestr(String.valueOf(millis));
         weChatJsSha1.setUrl(url);
         weChatJsSha1.setJsapi_ticket(jsApiTicket.getTicket());
-        Map<String, Object> map = MapUtil.objectToMap(weChatJsSdkResult);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdkResult);
         String sign = MapUtil.generateSignBySha1(map);
         weChatJsSha1.setSignature(sign);
         return weChatJsSha1;

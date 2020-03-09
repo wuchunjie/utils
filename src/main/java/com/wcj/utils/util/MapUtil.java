@@ -146,8 +146,8 @@ public class MapUtil {
      * @param obj
      * @return
      */
-    public static Map<String, Object> objectToMap(Object obj) {
-        Map<String, Object> map = new HashMap<>();
+    public static Map<String, String> objectToMap(Object obj) {
+        Map<String, String> map = new HashMap<>();
         List<Field> fields = FieldUtils.getAllFields(obj.getClass());
         if (fields == null) {
             return map;
@@ -155,7 +155,7 @@ public class MapUtil {
         fields.forEach(field -> {
             field.setAccessible(true);
             try {
-                map.put(field.getName(), field.get(obj));
+                map.put(field.getName(), field.get(obj).toString());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -187,9 +187,7 @@ public class MapUtil {
         }
         try {
             T t = clazz.newInstance();
-            map.forEach((key, value) -> {
-                FieldUtils.setFieldValue(key, value, t);
-            });
+            map.forEach((key, value) -> FieldUtils.setFieldValue(key, value, t));
             return t;
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
