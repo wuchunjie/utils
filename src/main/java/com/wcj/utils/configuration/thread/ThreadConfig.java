@@ -1,6 +1,8 @@
 package com.wcj.utils.configuration.thread;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -18,6 +20,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class ThreadConfig implements AsyncConfigurer {
 
+    @Bean
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -33,6 +36,6 @@ public class ThreadConfig implements AsyncConfigurer {
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return null;
+        return new SimpleAsyncUncaughtExceptionHandler();
     }
 }
