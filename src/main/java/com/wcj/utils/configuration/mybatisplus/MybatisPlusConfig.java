@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @author: create by wcj
  * @date: 2019/12/25 0025
  * @time: 下午 15:48
- * @Description:
+ * @Description: mybatis-plus分页配置
  */
 @Configuration
 @ConditionalOnClass(value = {PaginationInterceptor.class})

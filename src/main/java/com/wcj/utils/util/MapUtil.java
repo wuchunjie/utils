@@ -94,6 +94,20 @@ public class MapUtil {
         return tempMap;
     }
 
+    /**
+     * Map key 倒序排序
+     *
+     * @param map
+     * @return
+     */
+    public static <T> Map<String, T> orderByDesc(Map<String, T> map) {
+        HashMap<String, T> tempMap = new LinkedHashMap<>();
+        Set<String> keySet = map.keySet();
+        List<String> list = new ArrayList<>(keySet);
+        list.sort(Comparator.reverseOrder());
+        list.forEach(key -> tempMap.put(key, map.get(key)));
+        return tempMap;
+    }
 
     /**
      * url 参数串连

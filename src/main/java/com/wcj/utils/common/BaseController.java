@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author: create by wcj
  * @date: 2019/12/9 0009
  * @time: 上午 11:25
- * @Description:
+ * @Description: baseController 获取header中的token等操作
  */
 public class BaseController {
 

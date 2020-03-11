@@ -200,6 +200,9 @@ public class HttpClientUtil {
     }
 
     private static String buildUrlQuery(String url, Map<String, String> querys) {
+        if (querys == null) {
+            return url;
+        }
         return url + buildUrlQuery(querys);
     }
 
