@@ -18,8 +18,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,6 +199,30 @@ public class HttpClientUtil {
             }
         }
         return contentStr;
+    }
+
+    /**
+     * 将传入的参数，发送到前端，解决编码问题
+     * @param response
+     * @param json
+     */
+    public static void sendResponse(HttpServletResponse response, String json) {
+        //设置网页编码
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = null;
+        try {
+            out = response.getWriter();
+            out.print(json);
+        } catch (Exception e) {
+            //此处不考虑将异常抛出
+            e.printStackTrace();
+        } finally {
+            if(out != null) {
+                out.flush();
+                out.close();
+            }
+        }
     }
 
     private static String buildUrlQuery(String url, Map<String, String> querys) {
