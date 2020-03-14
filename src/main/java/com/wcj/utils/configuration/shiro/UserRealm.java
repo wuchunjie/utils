@@ -8,9 +8,6 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 
-import javax.annotation.Resource;
-import java.util.Set;
-
 /**
  * Created by IntelliJ IDEA.
  *
@@ -20,8 +17,6 @@ import java.util.Set;
  * @Description: 自定义realm
  */
 public class UserRealm extends AuthorizingRealm {
-
-
 
     /**
      * 执行授权逻辑
