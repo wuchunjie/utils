@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.wcj.utils.pojo.entity.*;
 import com.wcj.utils.util.httpclient.HttpClientUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +61,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(accessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
-        if (weChatJsSdkResult == null){
+        if (weChatJsSdkResult == null) {
             log.error(json);
             return null;
         }
@@ -86,7 +87,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(refreshTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
-        if (weChatJsSdkResult == null){
+        if (weChatJsSdkResult == null) {
             log.error(json);
             return null;
         }
@@ -112,7 +113,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(userInfoUrl, map);
         WeChatUserInfo weChatUserInfo = JSON.parseObject(json, WeChatUserInfo.class);
-        if (weChatUserInfo == null){
+        if (weChatUserInfo == null) {
             log.error(json);
             return null;
         }
@@ -142,6 +143,7 @@ public class WeChatJsSdkUtils {
 
     /**
      * 获取微信公众号access_token
+     *
      * @return
      */
     public WeChatJsSdkResult getAccEssToken() {
@@ -152,7 +154,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
-        if (weChatJsSdkResult == null){
+        if (weChatJsSdkResult == null) {
             log.error(json);
             return null;
         }
@@ -165,6 +167,7 @@ public class WeChatJsSdkUtils {
 
     /**
      * 获取jsapi_ticket
+     *
      * @param accessToken
      * @return
      */
@@ -175,7 +178,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
-        if (weChatJsSdkResult == null){
+        if (weChatJsSdkResult == null) {
             log.error(json);
             return null;
         }
@@ -188,6 +191,7 @@ public class WeChatJsSdkUtils {
 
     /**
      * 获取用户基本信息
+     *
      * @param accessToken
      * @param openId
      * @return
@@ -200,7 +204,7 @@ public class WeChatJsSdkUtils {
         Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
         String json = HttpClientUtil.doGet(unionUrl, map);
         WeChatUnion weChatUnion = JSON.parseObject(json, WeChatUnion.class);
-        if (weChatUnion == null){
+        if (weChatUnion == null) {
             log.error(json);
             return null;
         }
@@ -213,16 +217,17 @@ public class WeChatJsSdkUtils {
 
     /**
      * JS-SDK使用权限签名算法
+     *
      * @param url
      * @return
      */
-    public WeChatJsSha1 getSignature(String url){
+    public WeChatJsSha1 getSignature(String url) {
         WeChatJsSdkResult weChatJsSdkResult = getAccEssToken();
-        if (weChatJsSdkResult == null){
+        if (weChatJsSdkResult == null) {
             return null;
         }
         WeChatJsSdkResult jsApiTicket = getJsApiTicket(weChatJsSdkResult.getAccess_token());
-        if (jsApiTicket == null){
+        if (jsApiTicket == null) {
             return null;
         }
         long millis = System.currentTimeMillis();
@@ -235,5 +240,32 @@ public class WeChatJsSdkUtils {
         String sign = MapUtil.generateSignBySha1(map);
         weChatJsSha1.setSignature(sign);
         return weChatJsSha1;
+    }
+
+    /**
+     * 微信给指定openid发送文本消息
+     *
+     * @param openid
+     * @param message
+     */
+    public void sendMessage(String openid, String message) {
+        WeChatJsSdkResult weChatJsSdkResult = getAccEssToken();
+        if (weChatJsSdkResult == null) {
+            return;
+        }
+        String access_token = weChatJsSdkResult.getAccess_token();
+        if (StringUtils.isBlank(access_token)) {
+            return;
+        }
+        WeChatText text = new WeChatText();
+        text.setContent(message);
+        WeChatMessage weChatMessage = new WeChatMessage();
+        weChatMessage.setTouser(openid);
+        weChatMessage.setMsgtype("text");
+        weChatMessage.setText(text);
+        String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + access_token;
+        log.info("url=======" + url);
+        String json = HttpClientUtil.doPost(url, null, null, JSON.toJSONString(weChatMessage));
+        log.info(json);
     }
 }

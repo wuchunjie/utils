@@ -1,5 +1,6 @@
 package com.wcj.utils.util.httpclient;
 
+import com.alibaba.fastjson.JSON;
 import com.wcj.utils.util.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -120,6 +121,7 @@ public class HttpClientUtil {
             log.info("httpClient.doPost.Url=" + builderUrl);
             HttpPost request = new HttpPost(builderUrl);
             if (StringUtils.isNotBlank(body)) {
+                log.info("httpClient.doPost.body=" + body);
                 request.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
             }
             if (headers != null) {
@@ -153,6 +155,7 @@ public class HttpClientUtil {
             log.info("httpClient.doPost.Url=" + builderUrl);
             HttpPost request = new HttpPost(builderUrl);
             if (body != null) {
+                log.info("httpClient.doPost.body=" + JSON.toJSONString(body));
                 List<NameValuePair> nameValuePairList = new ArrayList<>();
                 body.forEach((key, value) -> {
                     nameValuePairList.add(new BasicNameValuePair(key, value));
@@ -203,6 +206,7 @@ public class HttpClientUtil {
 
     /**
      * 将传入的参数，发送到前端，解决编码问题
+     *
      * @param response
      * @param json
      */
@@ -218,7 +222,7 @@ public class HttpClientUtil {
             //此处不考虑将异常抛出
             e.printStackTrace();
         } finally {
-            if(out != null) {
+            if (out != null) {
                 out.flush();
                 out.close();
             }
