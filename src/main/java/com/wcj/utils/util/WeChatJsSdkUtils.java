@@ -46,6 +46,12 @@ public class WeChatJsSdkUtils {
     @Value("${wehcat.sdk.union}")
     private String unionUrl;
 
+    @Value("${wehcat.sdk.custom.send}")
+    private String customSend;
+
+    @Value("${wehcat.sdk.template.send}")
+    private String templateSend;
+
     /**
      * 通过code换取网页授权access_token
      *
@@ -253,19 +259,51 @@ public class WeChatJsSdkUtils {
         if (weChatJsSdkResult == null) {
             return;
         }
-        String access_token = weChatJsSdkResult.getAccess_token();
-        if (StringUtils.isBlank(access_token)) {
+        String accessToken = weChatJsSdkResult.getAccess_token();
+        if (StringUtils.isBlank(accessToken)) {
             return;
         }
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
+
         WeChatText text = new WeChatText();
         text.setContent(message);
         WeChatMessage weChatMessage = new WeChatMessage();
         weChatMessage.setTouser(openid);
         weChatMessage.setMsgtype("text");
         weChatMessage.setText(text);
-        String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + access_token;
-        log.info("url=======" + url);
-        String json = HttpClientUtil.doPost(url, null, null, JSON.toJSONString(weChatMessage));
-        log.info(json);
+        String json = HttpClientUtil.doPost(customSend, null, map, JSON.toJSONString(weChatMessage));
+    }
+
+
+    /**
+     * 微信给指定openid发送模板消息
+     *
+     * @param openid      用户openid
+     * @param template_id 模板id
+     * @param data        参数
+     * @param url         跳转链接
+     */
+    public void sendMessageByTemplate(String openid, String template_id, String url, WeChatMiniprogram miniprogram, WeChatTemplateData data) {
+        WeChatJsSdkResult weChatJsSdkResult = getAccEssToken();
+        if (weChatJsSdkResult == null) {
+            return;
+        }
+        String accessToken = weChatJsSdkResult.getAccess_token();
+        if (StringUtils.isBlank(accessToken)) {
+            return;
+        }
+        WeChatTemplateMessage msg = new WeChatTemplateMessage();
+        msg.setTouser(openid);
+        msg.setTemplate_id(template_id);
+        msg.setUrl(url);
+        msg.setMiniprogram(miniprogram);
+        msg.setData(data);
+
+        WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
+        weChatJsSdk.setAccess_token(accessToken);
+        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
+        HttpClientUtil.doPost(templateSend, null, map, JSON.toJSONString(msg));
     }
 }
