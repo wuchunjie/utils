@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class MybatisPlusUtils {
         for (Field field : fields) {
             Class<?> type = field.getType();
             if (skipDate) {
-                if (type.equals(Date.class)) {
+                if (type.equals(Date.class) || type.equals(LocalDate.class)) {
                     continue;
                 }
             }
