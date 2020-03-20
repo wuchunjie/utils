@@ -1,5 +1,6 @@
 package com.wcj.utils.util;
 
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -132,18 +133,15 @@ public class FieldUtils {
      * @param <V>
      * @return
      */
+    @SneakyThrows
     public static <T, V> V fieldTrans(T t, Class<V> clazz) {
+        V v = clazz.newInstance();
         List<Field> allFields = getAllFields(t.getClass());
-        try {
-            V v = clazz.newInstance();
             if (allFields != null) {
                 allFields.forEach(field -> setFieldValue(t, field, v));
-            }
             return v;
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
         }
-        return null;
+        return v;
     }
 
     /**
@@ -305,6 +303,27 @@ public class FieldUtils {
                 fields.addAll(fields2);
             }
             return fields;
+        }
+        return null;
+    }
+
+    /**
+     * 根绝name获取对象的属性值
+     * @param t
+     * @param name
+     * @param <T>
+     * @return
+     */
+    public static <T> Object getFieldsValueByName(T t, String name) {
+        Field field = getFieldByName(t.getClass(), name);
+        if (field == null){
+            return null;
+        }
+        try {
+            field.setAccessible(true);
+            return field.get(t);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
         return null;
     }
