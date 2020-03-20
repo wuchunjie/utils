@@ -257,7 +257,7 @@ public class FieldUtils {
     public static List<String> getFieldNames(Class<?> clazz) {
         List<String> names = new ArrayList<>();
         List<Field> fields = getFields(clazz);
-        if (fields != null) {
+        if (fields.size() > 0) {
             fields.forEach(field -> names.add(field.getName()));
         }
         return names;
@@ -273,7 +273,7 @@ public class FieldUtils {
         if (!clazz.equals(Object.class)) {
             return new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**
