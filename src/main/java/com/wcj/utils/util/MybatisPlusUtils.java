@@ -66,7 +66,10 @@ public class MybatisPlusUtils {
             } else {
                 name = StringLineHump.humpToLine(field.getName());
             }
-            if (stringLike && type.equals(String.class) && StringUtils.isNotBlank(name)) {
+            if (StringUtils.isBlank(name)){
+                continue;
+            }
+            if (stringLike && type.equals(String.class)) {
                 queryWrapper.like(name, value);
             } else {
                 queryWrapper.eq(name, value);
