@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -46,43 +47,28 @@ public class MybatisPlusUtils {
             }
             //属性为空，不用查询
             Object value = field.get(t);
+            String name = null;
             if (value == null) {
                 continue;
             }
             //主键 注解TableId
             TableId tableId = field.getAnnotation(TableId.class);
-            if (tableId != null) {
-                //主键
-                queryWrapper.eq(tableId.value(), value);
-                continue;
-            }
             //数据库中字段名和实体类属性不一致 注解TableField
             TableField tableField = field.getAnnotation(TableField.class);
-            if (tableField != null) {
+            if (tableId != null) {
+                //主键
+                name = tableId.value();
+            } else if (tableField != null) {
+                //数据库中字段名和实体类属性不一致 注解TableField
                 if (tableField.exist()) {
-                    String name = tableField.value();
-                    if (type.equals(String.class)) {
-                        if (stringLike) {
-                            queryWrapper.like(name, value);
-                        } else {
-                            queryWrapper.eq(name, value);
-                        }
-                    } else {
-                        queryWrapper.eq(name, value);
-                    }
-                }// @TableField(exist = false) 不是表中内容 不形成查询条件
-                continue;
-            }
-            String name = StringLineHump.humpToLine(field.getName());
-            if (type.equals(String.class)) {
-                if (stringLike) {
-                    queryWrapper.like(name, value);
-                } else {
-                    //属性名驼峰转下划线
-                    queryWrapper.eq(name, value);
+                    name = tableField.value();
                 }
             } else {
-                //属性名驼峰转下划线
+                name = StringLineHump.humpToLine(field.getName());
+            }
+            if (stringLike && type.equals(String.class) && StringUtils.isNotBlank(name)) {
+                queryWrapper.like(name, value);
+            } else {
                 queryWrapper.eq(name, value);
             }
         }
