@@ -45,29 +45,30 @@ public class MybatisPlusUtils {
                 continue;
             }
             //属性为空，不用查询
-            if (field.get(t) == null) {
+            Object value = field.get(t);
+            if (value == null) {
                 continue;
             }
             //主键 注解TableId
             TableId tableId = field.getAnnotation(TableId.class);
             if (tableId != null) {
                 //主键
-                queryWrapper.eq(tableId.value(), field.get(t));
+                queryWrapper.eq(tableId.value(), value);
                 continue;
             }
             //数据库中字段名和实体类属性不一致 注解TableField
             TableField tableField = field.getAnnotation(TableField.class);
             if (tableField != null) {
                 if (tableField.exist()) {
+                    String name = tableField.value();
                     if (type.equals(String.class)) {
                         if (stringLike) {
-                            queryWrapper.like(tableField.value(), field.get(t));
+                            queryWrapper.like(name, value);
                         } else {
-                            //属性名驼峰转下划线
-                            queryWrapper.eq(tableField.value(), field.get(t));
+                            queryWrapper.eq(name, value);
                         }
                     } else {
-                        queryWrapper.eq(tableField.value(), field.get(t));
+                        queryWrapper.eq(name, value);
                     }
                 }// @TableField(exist = false) 不是表中内容 不形成查询条件
                 continue;
@@ -75,14 +76,14 @@ public class MybatisPlusUtils {
             String name = StringLineHump.humpToLine(field.getName());
             if (type.equals(String.class)) {
                 if (stringLike) {
-                    queryWrapper.like(name, field.get(t));
+                    queryWrapper.like(name, value);
                 } else {
                     //属性名驼峰转下划线
-                    queryWrapper.eq(name, field.get(t));
+                    queryWrapper.eq(name, value);
                 }
             } else {
                 //属性名驼峰转下划线
-                queryWrapper.eq(name, field.get(t));
+                queryWrapper.eq(name, value);
             }
         }
         return queryWrapper;
