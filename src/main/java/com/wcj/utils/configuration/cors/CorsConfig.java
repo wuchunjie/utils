@@ -24,6 +24,8 @@ public class CorsConfig {
         corsConfiguration.addAllowedHeader("*");
         // 3允许任何方法（post、get等）
         corsConfiguration.addAllowedMethod("*");
+        // 4允许cookies跨域
+        corsConfiguration.setAllowCredentials(true);
         return corsConfiguration;
     }
 
