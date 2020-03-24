@@ -1,6 +1,7 @@
 package com.wcj.utils.configuration.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -36,6 +37,8 @@ public class JacksonConfig {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         objectMapper.setDateFormat(simpleDateFormat);
         objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        //忽略对象中没有的属性
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         return objectMapper;
     }
 

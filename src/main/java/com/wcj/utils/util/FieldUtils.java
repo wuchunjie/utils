@@ -186,7 +186,7 @@ public class FieldUtils {
                 return;
             }
             //字段类型不同,则不赋值
-            if (!field.getGenericType().getTypeName().equals(declaredField.getGenericType().getTypeName())) {
+            if (!field.getType().equals(declaredField.getType())) {
                 return;
             }
             declaredField.setAccessible(true);
