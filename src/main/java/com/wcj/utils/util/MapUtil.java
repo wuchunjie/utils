@@ -60,7 +60,7 @@ public class MapUtil {
      * @return
      */
     public static String generateSignByMd5(Map<String, String> map, String key) {
-        Map<String, String> tempMap = order(map);
+        Map<String, String> tempMap = orderByAsc(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.md5Hex(str + "&key=" + key).toUpperCase();
@@ -73,7 +73,7 @@ public class MapUtil {
      * @return
      */
     public static String generateSignBySha1(Map<String, String> map) {
-        Map<String, String> tempMap = order(map);
+        Map<String, String> tempMap = orderByAsc(map);
         tempMap.remove("sign");
         String str = mapJoin(tempMap, false, false);
         return DigestUtils.sha1Hex(str);
@@ -85,7 +85,7 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static <T> Map<String, T> order(Map<String, T> map) {
+    public static <T> Map<String, T> orderByAsc(Map<String, T> map) {
         HashMap<String, T> tempMap = new LinkedHashMap<>();
         Set<String> keySet = map.keySet();
         List<String> list = new ArrayList<>(keySet);
@@ -110,6 +110,24 @@ public class MapUtil {
     }
 
     /**
+     * Map key 倒序排序
+     *
+     * @param map
+     * @return
+     */
+    public static <T> Map<String, T> orderByDescInt(Map<String, T> map) {
+        HashMap<String, T> tempMap = new LinkedHashMap<>();
+        Set<String> keySet = map.keySet();
+        List<Integer> list = new ArrayList<>();
+        for (String str : keySet) {
+            list.add(Integer.parseInt(str));
+        }
+        list.sort(Comparator.reverseOrder());
+        list.forEach(key -> tempMap.put(String.valueOf(key), map.get(String.valueOf(key))));
+        return tempMap;
+    }
+
+    /**
      * url 参数串连
      *
      * @param map             参数
@@ -120,7 +138,7 @@ public class MapUtil {
     public static String mapJoin(Map<String, String> map, boolean keyLower, boolean valueUrlEncoder) {
         StringBuilder builder = new StringBuilder();
         map.forEach((key, value) -> {
-            if (StringUtils.isNotBlank(key)) {
+            if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
                 try {
                     String temp = (key.endsWith("_") && key.length() > 1) ? key.substring(0, key.length() - 1) : key;
                     builder.append(keyLower ? temp.toLowerCase() : temp)
@@ -169,7 +187,10 @@ public class MapUtil {
         fields.forEach(field -> {
             field.setAccessible(true);
             try {
-                map.put(field.getName(), field.get(obj).toString());
+                Object value = field.get(obj);
+                if (value != null) {
+                    map.put(field.getName(), value.toString());
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
