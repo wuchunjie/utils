@@ -32,6 +32,9 @@ public class MybatisPlusUtils {
     @SneakyThrows
     public static <T> QueryWrapper<T> getQueryWrapper(T t, boolean stringLike, boolean skipDate) {
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+        if (t == null) {
+            return queryWrapper;
+        }
         List<Field> fields = FieldUtils.getFields(t.getClass());
         for (Field field : fields) {
             Class<?> type = field.getType();
@@ -48,7 +51,7 @@ public class MybatisPlusUtils {
             //属性为空，不用查询
             Object value = field.get(t);
             String name = null;
-            if (value == null) {
+            if (value == null || StringUtils.isBlank(value.toString())) {
                 continue;
             }
             //主键 注解TableId
@@ -66,7 +69,7 @@ public class MybatisPlusUtils {
             } else {
                 name = StringLineHump.humpToLine(field.getName());
             }
-            if (StringUtils.isBlank(name)){
+            if (StringUtils.isBlank(name)) {
                 continue;
             }
             if (stringLike && type.equals(String.class)) {

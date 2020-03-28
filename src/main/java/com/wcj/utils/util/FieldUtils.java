@@ -117,11 +117,40 @@ public class FieldUtils {
      * @param obj
      * @return
      */
-    public static boolean hasNotEmpty(Object obj) {
+    public static boolean isNotEmpty(Object obj) {
         if (obj == null) {
             return false;
         }
         return !hasEmpty(obj);
+    }
+
+    /**
+     * 验证对象的属性是全部为空
+     *
+     * @param obj
+     * @return
+     */
+    public static boolean allEmpty(Object obj) {
+        if (obj == null) {
+            return true;
+        }
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            //序列化 字段不需要查询
+            if ("serialVersionUID".equals(field.getName())) {
+                continue;
+            }
+            try {
+                Object value = field.get(obj);
+                if (value != null && StringUtils.isNotBlank(value.toString())) {
+                    return false;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 
     /**
