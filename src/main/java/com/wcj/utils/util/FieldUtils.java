@@ -252,7 +252,7 @@ public class FieldUtils {
 
 
     /**
-     * 根绝字段名获取对象的字段
+     * 根据字段名获取对象的字段
      *
      * @param clazz
      * @param name

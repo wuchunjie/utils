@@ -1,4 +1,4 @@
-package com.wcj.utils.interceptor;
+package com.wcj.utils.configuration.interceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

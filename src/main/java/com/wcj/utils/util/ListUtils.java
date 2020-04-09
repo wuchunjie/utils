@@ -18,6 +18,26 @@ import java.util.stream.Collectors;
 public class ListUtils {
 
     /**
+     * 判断集合的是否为空,或者长度是否大于0
+      * @param list
+     * @param <T>
+     * @return
+     */
+    public static <T> boolean isBlank(List<T> list){
+        return list == null || list.size() == 0;
+    }
+
+    /**
+     * 判断集合的不为空,或者长度是大于0
+     * @param list
+     * @param <T>
+     * @return
+     */
+    public static <T> boolean isNotBlank(List<T> list){
+        return !isBlank(list);
+    }
+
+    /**
      * 按照某个属性把集合进行分组
      *
      * @param list 需要分组的集合

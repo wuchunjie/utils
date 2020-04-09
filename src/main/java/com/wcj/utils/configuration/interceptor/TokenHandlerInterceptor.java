@@ -1,4 +1,4 @@
-package com.wcj.utils.interceptor;
+package com.wcj.utils.configuration.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import com.wcj.utils.annotation.DisableAuth;
