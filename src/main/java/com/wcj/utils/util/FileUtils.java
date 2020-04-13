@@ -1,6 +1,6 @@
 package com.wcj.utils.util;
 
-import com.wcj.admin.pojo.entity.BaseResult;
+import com.wcj.utils.pojo.vo.BaseResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,10 +54,14 @@ public class FileUtils {
         return BaseResult.successData(fileServer + fileName);
     }
 
-
-    public File getFile(String name){
+    /**
+     * 获取文件
+     * @param name
+     * @return
+     */
+    public File getFile(String name) {
         File file = new File(filePath + name);
-        if (file.exists()){
+        if (file.exists()) {
             return file;
         }
         return null;
