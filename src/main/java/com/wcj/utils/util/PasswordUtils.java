@@ -4,6 +4,8 @@ package com.wcj.utils.util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Random;
+
 /**
  * Created by IntelliJ IDEA.
  *
@@ -60,5 +62,19 @@ public class PasswordUtils {
      */
     public static String getRandom() {
         return (int) ((Math.random() * 9 + 1) * 100000) + "";
+    }
+
+    /**
+     * 获取随机6位数
+     *
+     * @return
+     */
+    public static String getRandom2() {
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            builder.append(random.nextInt(10));
+        }
+        return builder.toString();
     }
 }
