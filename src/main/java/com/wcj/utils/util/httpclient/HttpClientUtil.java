@@ -203,6 +203,7 @@ public class HttpClientUtil {
 
     /**
      * 将传入的参数，发送到前端，解决编码问题
+     *
      * @param response
      * @param json
      */
@@ -218,7 +219,7 @@ public class HttpClientUtil {
             //此处不考虑将异常抛出
             e.printStackTrace();
         } finally {
-            if(out != null) {
+            if (out != null) {
                 out.flush();
                 out.close();
             }
@@ -228,6 +229,10 @@ public class HttpClientUtil {
     private static String buildUrlQuery(String url, Map<String, String> querys) {
         if (querys == null) {
             return url;
+        }
+        String last = url.substring(url.length() - 1);
+        if ("/".equals(last)) {
+            url = url.substring(0, url.length() - 1);
         }
         return url + buildUrlQuery(querys);
     }
