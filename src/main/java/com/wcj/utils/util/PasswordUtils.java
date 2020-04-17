@@ -2,6 +2,7 @@ package com.wcj.utils.util;
 
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,16 +41,21 @@ public class PasswordUtils {
 
     /**
      * 密码盐值加密
+     *
      * @param password
      * @param salt
      * @return
      */
     public static String getPassword(String password, String salt) {
-        return getPassword(salt + password);
+        if (StringUtils.isNotBlank(salt)) {
+            password = password + salt;
+        }
+        return getPassword(password);
     }
 
     /**
      * 获取随机6位数盐值
+     *
      * @return
      */
     public static String getSalt() {
