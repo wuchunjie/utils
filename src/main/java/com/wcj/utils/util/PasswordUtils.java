@@ -54,11 +54,11 @@ public class PasswordUtils {
     }
 
     /**
-     * 获取随机6位数盐值
+     * 获取随机6位数
      *
      * @return
      */
-    public static String getSalt() {
+    public static String getRandom() {
         return (int) ((Math.random() * 9 + 1) * 100000) + "";
     }
 }
