@@ -13,10 +13,14 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class PasswordUtils {
 
+    /**
+     * 默认密码
+     */
     public static final String DEFAULT_PASSWORD = "123456";
 
     /**
      * 用户输入的密码,前后一半调换位置,md5加密之后,再次前后交换,最后md5
+     *
      * @param password
      * @return
      */
@@ -32,5 +36,23 @@ public class PasswordUtils {
         buffer.append(password, i, password.length());
         buffer.append(password, 0, i);
         return DigestUtils.md5Hex(buffer.toString());
+    }
+
+    /**
+     * 密码盐值加密
+     * @param password
+     * @param salt
+     * @return
+     */
+    public static String getPassword(String password, String salt) {
+        return getPassword(salt + password);
+    }
+
+    /**
+     * 获取随机6位数盐值
+     * @return
+     */
+    public static String getSalt() {
+        return (int) ((Math.random() * 9 + 1) * 100000) + "";
     }
 }
