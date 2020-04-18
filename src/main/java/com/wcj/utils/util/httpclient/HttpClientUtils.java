@@ -1,6 +1,6 @@
 package com.wcj.utils.util.httpclient;
 
-import com.wcj.utils.util.MapUtil;
+import com.wcj.utils.util.MapUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +36,7 @@ import java.util.Map;
  * @Description: http工具
  */
 @Slf4j
-public class HttpClientUtil {
+public class HttpClientUtils {
 
     /**
      * get请求获取json
@@ -238,6 +238,6 @@ public class HttpClientUtil {
     }
 
     private static String buildUrlQuery(Map<String, String> querys) {
-        return "?" + MapUtil.mapJoin(querys, false, true);
+        return "?" + MapUtils.mapJoin(querys, false, true);
     }
 }

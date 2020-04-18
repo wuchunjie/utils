@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.wcj.utils.annotation.DisableAuth;
 import com.wcj.utils.pojo.vo.BaseResult;
 import com.wcj.utils.pojo.vo.HttpStatusCode;
-import com.wcj.utils.util.httpclient.HttpClientUtil;
+import com.wcj.utils.util.httpclient.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -39,11 +39,11 @@ public class TokenHandlerInterceptor extends HandlerInterceptorAdapter {
         }
         String token = request.getHeader("token");
         if (StringUtils.isBlank(token)) {
-            HttpClientUtil.sendResponse(response, JSON.toJSONString(BaseResult.fail(HttpStatusCode.NO_TOKEN, "token为空")));
+            HttpClientUtils.sendResponse(response, JSON.toJSONString(BaseResult.fail(HttpStatusCode.NO_TOKEN, "token为空")));
             return false;
         } else {
             //TODO 按照toke查询用户,判断用户是否存在
-            HttpClientUtil.sendResponse(response, JSON.toJSONString(BaseResult.fail(HttpStatusCode.NO_MEMBER, "用户不存在")));
+            HttpClientUtils.sendResponse(response, JSON.toJSONString(BaseResult.fail(HttpStatusCode.NO_MEMBER, "用户不存在")));
         }
         return true;
     }

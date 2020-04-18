@@ -27,7 +27,7 @@ import java.util.Map.Entry;
  * @time: 下午 15:28
  * @Description: map的一些工具
  */
-public class MapUtil {
+public class MapUtils {
     /**
      * Description: 替换map里的null为""
      *

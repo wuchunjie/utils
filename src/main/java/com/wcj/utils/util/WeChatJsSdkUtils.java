@@ -2,7 +2,7 @@ package com.wcj.utils.util;
 
 import com.alibaba.fastjson.JSON;
 import com.wcj.utils.pojo.entity.*;
-import com.wcj.utils.util.httpclient.HttpClientUtil;
+import com.wcj.utils.util.httpclient.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,8 +64,8 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setCode(code);
         weChatJsSdk.setGrant_type("authorization_code");
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(accessTokenUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(accessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null) {
             log.error(json);
@@ -90,8 +90,8 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setGrant_type("refresh_token");
         weChatJsSdk.setRefresh_token(refreshToken);
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(refreshTokenUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(refreshTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null) {
             log.error(json);
@@ -116,8 +116,8 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openid);
         weChatJsSdk.setLang("zh_CN");
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(userInfoUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(userInfoUrl, map);
         WeChatUserInfo weChatUserInfo = JSON.parseObject(json, WeChatUserInfo.class);
         if (weChatUserInfo == null) {
             log.error(json);
@@ -141,8 +141,8 @@ public class WeChatJsSdkUtils {
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openid);
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(checkAccessTokenUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(checkAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         return weChatJsSdkResult != null && weChatJsSdkResult.getErrcode() != null && weChatJsSdkResult.getErrcode() == 0;
     }
@@ -157,8 +157,8 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAppid(appid);
         weChatJsSdk.setSecret(appsecret);
         weChatJsSdk.setGrant_type("client_credential");
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null) {
             log.error(json);
@@ -181,8 +181,8 @@ public class WeChatJsSdkUtils {
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setType("jsapi");
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(getAccessTokenUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(getAccessTokenUrl, map);
         WeChatJsSdkResult weChatJsSdkResult = JSON.parseObject(json, WeChatJsSdkResult.class);
         if (weChatJsSdkResult == null) {
             log.error(json);
@@ -207,8 +207,8 @@ public class WeChatJsSdkUtils {
         weChatJsSdk.setAccess_token(accessToken);
         weChatJsSdk.setOpenid(openId);
         weChatJsSdk.setLang("zh_CN");
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        String json = HttpClientUtil.doGet(unionUrl, map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        String json = HttpClientUtils.doGet(unionUrl, map);
         WeChatUnion weChatUnion = JSON.parseObject(json, WeChatUnion.class);
         if (weChatUnion == null) {
             log.error(json);
@@ -242,8 +242,8 @@ public class WeChatJsSdkUtils {
         weChatJsSha1.setNoncestr(String.valueOf(millis));
         weChatJsSha1.setUrl(url);
         weChatJsSha1.setJsapi_ticket(jsApiTicket.getTicket());
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdkResult);
-        String sign = MapUtil.generateSignBySha1(map);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdkResult);
+        String sign = MapUtils.generateSignBySha1(map);
         weChatJsSha1.setSignature(sign);
         return weChatJsSha1;
     }
@@ -265,7 +265,7 @@ public class WeChatJsSdkUtils {
         }
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
 
         WeChatText text = new WeChatText();
         text.setContent(message);
@@ -273,7 +273,7 @@ public class WeChatJsSdkUtils {
         weChatMessage.setTouser(openid);
         weChatMessage.setMsgtype("text");
         weChatMessage.setText(text);
-        String json = HttpClientUtil.doPost(customSend, null, map, JSON.toJSONString(weChatMessage));
+        String json = HttpClientUtils.doPost(customSend, null, map, JSON.toJSONString(weChatMessage));
     }
 
 
@@ -303,7 +303,7 @@ public class WeChatJsSdkUtils {
 
         WeChatJsSdk weChatJsSdk = new WeChatJsSdk();
         weChatJsSdk.setAccess_token(accessToken);
-        Map<String, String> map = MapUtil.objectToMap(weChatJsSdk);
-        HttpClientUtil.doPost(templateSend, null, map, JSON.toJSONString(msg));
+        Map<String, String> map = MapUtils.objectToMap(weChatJsSdk);
+        HttpClientUtils.doPost(templateSend, null, map, JSON.toJSONString(msg));
     }
 }

@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * 文件名：DateUtil.java 日期处理相关工具类
+ * 文件名：DateUtils.java 日期处理相关工具类
  * 版本信息：V1.0
  * 日期：2013-03-11
  * Copyright BDVCD Corporation 2013
  * 版权所有 http://www.bdvcd.com
  */
-public class DateUtil {
+public class DateUtils {
 
     /**
      * 定义常量

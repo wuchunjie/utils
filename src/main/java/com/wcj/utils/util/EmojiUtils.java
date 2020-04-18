@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @time: 下午 13:12
  * @Description:
  */
-public class EmojiUtil {
+public class EmojiUtils {
 
     /**
      * @param str 待转换字符串
